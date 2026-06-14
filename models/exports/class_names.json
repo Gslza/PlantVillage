@@ -1,0 +1,14 @@
+{
+  "class_names": [
+    "bacterial_spot",
+    "early_blight",
+    "healthy",
+    "late_blight",
+    "leaf_mold",
+    "septoria_leaf_spot",
+    "target_spot",
+    "tomato_mosaic_virus",
+    "tomato_yellow_leaf_curl_virus",
+    "two_spotted_spider_mite"
+  ]
+}
