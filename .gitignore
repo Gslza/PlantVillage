@@ -148,26 +148,6 @@ cython_debug/
 .vscode/
 .idea/
 
-# --- Project Specific Ignores ---
-# Large dataset directories
 Dataset of Tomato Leaves/
 dataset_clean/
 
-# Large compressed archives
-*.zip
-*.rar
-*.tar.gz
-
-# Saved models & model weights
-*.keras
-*.h5
-*.hdf5
-*.pkl
-*.pb
-*.tflite
-models/best_scratch.keras
-models/best_tl_finetune.keras
-models/best_tl_stage1.keras
-models/exports/plantvillage_tomato_classifier.tflite
-models/exports/plantvillage_tomato_classifier_savedmodel/
-models/exports/plantvillage_tomato_classifier_tfjs/
