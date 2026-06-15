@@ -1,113 +1,271 @@
-# Tomato Leaf Dataset Preparation Script
+<div align="center">
 
-Repotori ini berisi script Python `prepare_dataset.py` yang dirancang untuk membersihkan, melakukan deduplikasi, memvalidasi integritas gambar, dan membagi dataset klasifikasi gambar daun tomat secara terstruktur dan proporsional (stratified split).
+# 🌿 Tomato Leaf Disease Classification
 
-![Grafik akurasi](PlantVillage/result/distribusi_dataset.png)
-## Fitur Utama
-1. **Normalisasi Nama Kelas**: Mengubah folder kelas asli menjadi format lowercase dan snake_case.
-2. **Validasi Gambar**: Mendeteksi gambar yang rusak/corrupt menggunakan library `Pillow` (`PIL.Image`).
-3. **Deduplikasi SHA-256**: Mendeteksi gambar duplikat di dalam seluruh dataset berdasarkan nilai hash berkas.
-4. **Pembagian Data Stratified (80/10/10)**: Membagi data menjadi Train (80%), Validation (10%), dan Test (10%) dengan mempertahankan distribusi kelas secara proporsional menggunakan `scikit-learn`.
-5. **Dukungan Concurrency**: Proses penyalinan file dapat dilakukan secara paralel menggunakan multi-threading untuk meningkatkan performa.
-6. **Laporan CSV dan JSON**: Menghasilkan 5 jenis laporan detail mengenai ringkasan dataset, file corrupt, file duplikat, manifest pembagian, dan pemetaan kelas.
-7. **Kompatibilitas**: Mendukung Windows (Command Prompt & PowerShell) serta Google Colab.
+### Klasifikasi 10 Kondisi Daun Tomat Menggunakan CNN dan MobileNetV2
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-Keras-FF6F00?logo=tensorflow&logoColor=white)
+![Classes](https://img.shields.io/badge/Classes-10-2E8B57)
+![Dataset Split](https://img.shields.io/badge/Split-80%3A10%3A10-6F42C1)
+![License](https://img.shields.io/badge/License-Educational-lightgrey)
+
+Proyek deep learning untuk mengklasifikasikan penyakit daun tomat dari dataset **PlantVillage** menggunakan dua pendekatan: **CNN From Scratch** dan **Transfer Learning MobileNetV2 dengan Fine-Tuning**.
+
+[Dataset](https://www.kaggle.com/datasets/gusliza/plantvillage) · [Notebook](notebook/plantvillage_cnn_classification.py) · [Model](models) · [Hasil Visualisasi](results)
+
+</div>
 
 ---
 
-## Struktur Output Hasil
-Setelah dijalankan, script akan menghasilkan folder output dengan struktur berikut:
+## 📌 Tentang Proyek
 
-```text
-dataset_clean/
-├── train/
-│   ├── bacterial_spot/
-│   ├── early_blight/
-│   ├── healthy/
-│   ├── late_blight/
-│   ├── leaf_mold/
-│   ├── septoria_leaf_spot/
-│   ├── target_spot/
-│   ├── tomato_mosaic_virus/
-│   ├── tomato_yellow_leaf_curl_virus/
-│   └── two_spotted_spider_mite/
-├── validation/
-│   └── (seluruh folder kelas yang sama)
-├── test/
-│   └── (seluruh folder kelas yang sama)
-└── reports/
-    ├── dataset_summary.csv
-    ├── corrupt_files.csv
-    ├── duplicate_files.csv
-    ├── split_manifest.csv
-    └── class_mapping.json
+Sistem ini dirancang untuk mengenali kondisi kesehatan daun tomat berdasarkan citra digital. Proses pengembangan mencakup pembersihan dataset, validasi gambar, deduplikasi, pembagian data secara terstratifikasi, augmentasi, pelatihan dua arsitektur, evaluasi, inferensi, dan ekspor model untuk berbagai platform deployment.
+
+### Model yang Dibandingkan
+
+| Model | Pendekatan | Tujuan |
+|---|---|---|
+| **CNN From Scratch** | Arsitektur CNN dibangun dan dilatih dari awal | Menjadi baseline performa klasifikasi |
+| **MobileNetV2** | Transfer learning, feature extraction, dan fine-tuning | Memanfaatkan fitur pralatih ImageNet untuk meningkatkan generalisasi |
+
+---
+
+## 🗂️ Kelas Dataset
+
+Dataset terdiri dari **10 kelas** kondisi daun tomat:
+
+| No. | Nama Kelas | Keterangan |
+|---:|---|---|
+| 1 | `bacterial_spot` | Bercak bakteri |
+| 2 | `early_blight` | Hawar awal |
+| 3 | `healthy` | Daun sehat |
+| 4 | `late_blight` | Hawar akhir |
+| 5 | `leaf_mold` | Jamur daun |
+| 6 | `septoria_leaf_spot` | Bercak daun Septoria |
+| 7 | `target_spot` | Bercak target |
+| 8 | `tomato_mosaic_virus` | Virus mosaik tomat |
+| 9 | `tomato_yellow_leaf_curl_virus` | Virus keriting daun kuning tomat |
+| 10 | `two_spotted_spider_mite` | Tungau laba-laba berbintik dua |
+
+Dataset dibagi menggunakan proporsi **80% training, 10% validation, dan 10% testing** dengan pendekatan stratified split agar proporsi setiap kelas tetap seimbang.
+
+---
+
+# 📊 Data Visualization dan Hasil Eksperimen
+
+Seluruh grafik berikut disimpan di folder [`results/`](results).
+
+## 1. Distribusi Dataset
+
+Visualisasi jumlah gambar setiap kelas pada data training, validation, dan testing, sekaligus proporsi keseluruhan split dataset.
+
+<p align="center">
+  <img src="results/distribusi_dataset.png" alt="Distribusi dataset PlantVillage" width="900">
+</p>
+
+## 2. Contoh Gambar Setiap Kelas
+
+Contoh citra daun tomat dari masing-masing kelas yang digunakan dalam proses pelatihan.
+
+<p align="center">
+  <img src="results/contoh_gambar.png" alt="Contoh gambar setiap kelas" width="900">
+</p>
+
+## 3. Hasil Data Augmentation
+
+Augmentasi diterapkan pada data training menggunakan rotasi, pergeseran, zoom, shear, dan horizontal flip untuk meningkatkan variasi data dan mengurangi risiko overfitting.
+
+<p align="center">
+  <img src="results/augmentasi.png" alt="Visualisasi data augmentation" width="900">
+</p>
+
+## 4. CNN From Scratch
+
+<table>
+  <tr>
+    <td align="center"><strong>Training History</strong></td>
+    <td align="center"><strong>Confusion Matrix</strong></td>
+  </tr>
+  <tr>
+    <td><img src="results/history_scratch.png" alt="Training history CNN scratch" width="100%"></td>
+    <td><img src="results/cm_cnn_from_scratch.png" alt="Confusion matrix CNN scratch" width="100%"></td>
+  </tr>
+</table>
+
+Grafik training history memperlihatkan perubahan accuracy dan loss pada data training serta validation. Confusion matrix menunjukkan distribusi prediksi model untuk seluruh kelas pada data testing.
+
+## 5. MobileNetV2 — Feature Extraction
+
+Pada tahap pertama, backbone MobileNetV2 dibekukan dan hanya classification head yang dilatih.
+
+<p align="center">
+  <img src="results/history_tl_stage1.png" alt="Training history MobileNetV2 feature extraction" width="900">
+</p>
+
+## 6. MobileNetV2 — Fine-Tuning
+
+Sebagian layer terakhir MobileNetV2 dibuka kembali dan dilatih menggunakan learning rate yang lebih kecil.
+
+<p align="center">
+  <img src="results/history_ft.png" alt="Training history MobileNetV2 fine tuning" width="900">
+</p>
+
+## 7. Gabungan Feature Extraction dan Fine-Tuning
+
+Garis pemisah pada grafik menunjukkan transisi dari tahap feature extraction menuju fine-tuning.
+
+<p align="center">
+  <img src="results/history_combined.png" alt="Gabungan feature extraction dan fine tuning" width="900">
+</p>
+
+## 8. Confusion Matrix MobileNetV2
+
+<p align="center">
+  <img src="results/cm_mobilenetv2_fine-tuned.png" alt="Confusion matrix MobileNetV2 fine tuned" width="780">
+</p>
+
+## 9. Perbandingan Performa Model
+
+Perbandingan test accuracy antara CNN From Scratch dan MobileNetV2 Fine-Tuned.
+
+<p align="center">
+  <img src="results/perbandingan_model.png" alt="Perbandingan performa model" width="700">
+</p>
+
+## 10. Hasil Inferensi
+
+Contoh prediksi MobileNetV2 Fine-Tuned pada gambar dari testing set. Label hijau menandakan prediksi benar, sedangkan label merah menandakan prediksi yang tidak sesuai dengan kelas aktual.
+
+<p align="center">
+  <img src="results/inferensi_hasil.png" alt="Hasil inferensi model" width="900">
+</p>
+
+---
+
+## ⚙️ Alur Pengembangan
+
+```mermaid
+flowchart LR
+    A[Dataset PlantVillage] --> B[Validasi dan Deduplikasi]
+    B --> C[Stratified Split 80:10:10]
+    C --> D[Resize dan Normalisasi]
+    D --> E[Data Augmentation]
+    E --> F1[CNN From Scratch]
+    E --> F2[MobileNetV2]
+    F2 --> G[Fine-Tuning]
+    F1 --> H[Evaluasi]
+    G --> H
+    H --> I[Confusion Matrix dan Perbandingan]
+    I --> J[Ekspor SavedModel, TFLite, dan TFJS]
 ```
 
-Nama file hasil salinan di setiap split akan diatur secara berurutan dan konsisten:
-- `bacterial_spot_000001.jpg`
-- `bacterial_spot_000002.jpg`
-- `early_blight_000001.jpg`
+---
+
+## 🧠 Konfigurasi Pelatihan
+
+| Parameter | Nilai |
+|---|---:|
+| Ukuran input | `224 × 224 × 3` |
+| Batch size | `32` |
+| Maksimum epoch CNN Scratch | `50` |
+| Maksimum epoch Feature Extraction | `30` |
+| Maksimum epoch Fine-Tuning | `20` |
+| Optimizer | Adam |
+| Loss function | Categorical Crossentropy |
+| Learning rate CNN Scratch | `1e-3` |
+| Learning rate Feature Extraction | `1e-3` |
+| Learning rate Fine-Tuning | `1e-5` |
+| Random seed | `42` |
+
+Callback yang digunakan:
+
+- `EarlyStopping` untuk menghentikan training ketika validation loss tidak lagi membaik.
+- `ReduceLROnPlateau` untuk menurunkan learning rate secara adaptif.
+- `ModelCheckpoint` untuk menyimpan model dengan validation accuracy terbaik.
 
 ---
 
-## Petunjuk Penggunaan
+## 📁 Struktur Repository
 
-### 1. Instalasi Dependensi
-Pastikan Python 3 telah terinstal. Pasang pustaka pihak ketiga yang diperlukan menggunakan perintah berikut:
+```text
+PlantVillage/
+├── notebook/
+│   └── plantvillage_cnn_classification.py
+├── models/
+│   ├── best_scratch.keras
+│   ├── best_tl_stage1.keras
+│   ├── best_tl_finetune.keras
+│   └── exports/
+│       ├── class_names.json
+│       ├── plantvillage_tomato_classifier.tflite
+│       ├── plantvillage_tomato_classifier_savedmodel/
+│       └── plantvillage_tomato_classifier_tfjs/
+├── results/
+│   ├── distribusi_dataset.png
+│   ├── contoh_gambar.png
+│   ├── augmentasi.png
+│   ├── history_scratch.png
+│   ├── cm_cnn_from_scratch.png
+│   ├── history_tl_stage1.png
+│   ├── history_ft.png
+│   ├── history_combined.png
+│   ├── cm_mobilenetv2_fine-tuned.png
+│   ├── perbandingan_model.png
+│   └── inferensi_hasil.png
+├── prepare_dataset.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🚀 Menjalankan Proyek
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/Gslza/PlantVillage.git
+cd PlantVillage
+```
+
+### 2. Buat Virtual Environment
+
+#### Windows PowerShell
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+#### Linux atau macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Instal Dependensi
+
+Untuk menjalankan script persiapan dataset:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Isi dari `requirements.txt`:
-```text
-Pillow>=10.0.0
-scikit-learn>=1.0.0
-```
-
-### 2. Parameter Command Line (Argumen)
-Script ini menyediakan beberapa argumen opsional:
-- `--source`: Lokasi dataset sumber utama (Default: `"Dataset of Tomato Leaves/plantvillage/Preprocessed data"`).
-- `--output`: Lokasi folder output hasil pembersihan (Default: `"dataset_clean"`).
-- `--train-ratio`: Rasio subset Train (Default: `0.8`).
-- `--val-ratio`: Rasio subset Validation (Default: `0.1`).
-- `--test-ratio`: Rasio subset Test (Default: `0.1`).
-- `--seed`: Angka acak/random seed untuk reproduktibilitas hasil (Default: `42`).
-- `--overwrite`: Menghapus folder output jika sudah ada sebelumnya dan membuat ulang.
-- `--dry-run`: Hanya menjalankan simulasi pengecekan gambar, deduplikasi, pembagian, dan menampilkan tabel sebaran kelas tanpa menyalin berkas asli ke disk.
-- `--copy-workers`: Jumlah worker thread untuk proses penyalinan file secara paralel (Default: `4`).
-
-### 3. Cara Menjalankan
-
-#### A. Menjalankan Simulasi (Dry Run)
-Sebelum menyalin ribuan file, Anda dapat menjalankan simulasi terlebih dahulu untuk memeriksa hasil statistik pembagian kelas:
+Untuk menjalankan keseluruhan eksperimen deep learning:
 
 ```bash
-python prepare_dataset.py --dry-run
+pip install tensorflow kagglehub tensorflow-addons tensorflowjs \
+    numpy pandas matplotlib seaborn scikit-learn pillow
 ```
 
-#### B. Penggunaan di Windows PowerShell
-Jalankan perintah berikut untuk merapikan dataset asli ke folder baru `dataset_clean/`:
+### 4. Persiapkan Dataset
 
-```powershell
-python prepare_dataset.py `
-    --source "Dataset of Tomato Leaves\plantvillage\Preprocessed data" `
-    --output "dataset_clean" `
-    --train-ratio 0.8 `
-    --val-ratio 0.1 `
-    --test-ratio 0.1 `
-    --seed 42 `
-    --overwrite
-```
+Contoh perintah untuk membersihkan dan membagi dataset:
 
-#### C. Penggunaan di Google Colab / Linux
-Di sel kode Google Colab, Anda dapat memasang dependensi dan memicu pembersihan dengan:
-
-```python
-# Install dependencies
-!pip install Pillow scikit-learn
-
-# Jalankan script
-!python prepare_dataset.py \
+```bash
+python prepare_dataset.py \
     --source "Dataset of Tomato Leaves/plantvillage/Preprocessed data" \
     --output "dataset_clean" \
     --train-ratio 0.8 \
@@ -117,11 +275,68 @@ Di sel kode Google Colab, Anda dapat memasang dependensi dan memicu pembersihan 
     --overwrite
 ```
 
+Untuk melakukan simulasi tanpa menyalin file:
+
+```bash
+python prepare_dataset.py --dry-run
+```
+
+### 5. Jalankan Notebook
+
+Buka file [`notebook/plantvillage_cnn_classification.py`](notebook/plantvillage_cnn_classification.py) di Google Colab atau ubah kembali menjadi notebook `.ipynb`, kemudian jalankan setiap tahap secara berurutan menggunakan GPU.
+
 ---
 
-## Penjelasan Berkas Laporan (`reports/`)
-1. **`dataset_summary.csv`**: Statistik sebaran jumlah gambar per kelas (original, valid, corrupt, duplicate, train, validation, test).
-2. **`corrupt_files.csv`**: Daftar berkas gambar yang rusak/tidak dapat dibuka beserta letak berkas dan pesan kesalahan detailnya.
-3. **`duplicate_files.csv`**: Daftar gambar duplikat, hash SHA-256 berkas, nama kelas, dan rujukan ke berkas gambar asli pertama.
-4. **`split_manifest.csv`**: Pemetaan lokasi gambar sumber asli, nama split (train/validation/test), lokasi salinan berkas baru, dan nilai hash SHA-256 masing-masing.
-5. **`class_mapping.json`**: File konversi / pemetaan nama folder asli dengan format kelas snake_case baru yang dirapikan.
+## 📦 Model dan Format Deployment
+
+| Artefak | Lokasi | Kegunaan |
+|---|---|---|
+| CNN terbaik | `models/best_scratch.keras` | Evaluasi atau inferensi dengan Keras |
+| MobileNetV2 stage 1 | `models/best_tl_stage1.keras` | Model setelah feature extraction |
+| MobileNetV2 fine-tuned | `models/best_tl_finetune.keras` | Model utama setelah fine-tuning |
+| TensorFlow SavedModel | `models/exports/plantvillage_tomato_classifier_savedmodel/` | Deployment server atau TensorFlow Serving |
+| TensorFlow Lite | `models/exports/plantvillage_tomato_classifier.tflite` | Deployment mobile, edge, atau embedded |
+| TensorFlow.js | `models/exports/plantvillage_tomato_classifier_tfjs/` | Inferensi melalui browser atau aplikasi web |
+| Label kelas | `models/exports/class_names.json` | Pemetaan indeks output menjadi nama kelas |
+
+> Model berukuran besar dikelola menggunakan **Git LFS**. Pastikan Git LFS telah terpasang sebelum melakukan clone penuh terhadap seluruh artefak model.
+
+```bash
+git lfs install
+git lfs pull
+```
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+- Python
+- TensorFlow dan Keras
+- MobileNetV2
+- NumPy dan Pandas
+- Matplotlib dan Seaborn
+- Scikit-learn
+- Pillow
+- KaggleHub
+- TensorFlow Lite
+- TensorFlow.js
+- Git LFS
+
+---
+
+## 👨‍💻 Identitas
+
+**Gusli Yanza**  
+NIM: `8030230056`  
+Kelas: `01PK6`  
+Program Studi Sistem Komputer
+
+---
+
+<div align="center">
+
+Dikembangkan sebagai proyek klasifikasi citra penyakit daun tomat menggunakan deep learning.
+
+⭐ Berikan star pada repository ini apabila proyeknya bermanfaat.
+
+</div>
