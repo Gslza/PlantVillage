@@ -155,3 +155,9 @@ dataset_clean.zip
 8030230056_Gusli-Yanza_PlantVillge.rar
 hasil_proyek_plantvillage.zip
 
+# AIoT Runtime Files
+logs/*.csv
+screenshots/*.jpg
+screenshots/*.png
+models/**/*.bak
+
