@@ -2,6 +2,7 @@
 
 Repotori ini berisi script Python `prepare_dataset.py` yang dirancang untuk membersihkan, melakukan deduplikasi, memvalidasi integritas gambar, dan membagi dataset klasifikasi gambar daun tomat secara terstruktur dan proporsional (stratified split).
 
+![Grafik akurasi](result/distribusi_dataset.png)
 ## Fitur Utama
 1. **Normalisasi Nama Kelas**: Mengubah folder kelas asli menjadi format lowercase dan snake_case.
 2. **Validasi Gambar**: Mendeteksi gambar yang rusak/corrupt menggunakan library `Pillow` (`PIL.Image`).
